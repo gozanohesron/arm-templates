@@ -245,7 +245,18 @@
 					"properties": {
 						"value": "[parameters('jwtRefreshTokenExpiryMinutes')]"
 					}
-				}  
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "Settings:Sentinel",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "1"
+					}
+				}
 			]
 		}
 	]
