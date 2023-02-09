@@ -30,10 +30,12 @@
 			"type": "string"
 		},
         "jwtIssuer": {
-			"type": "string"
+			"type": "string",
+            "defaultValue": ""
 		},
         "jwtAudience": {
-			"type": "string"
+			"type": "string",
+            "defaultValue": ""
 		},
         "jwtExpiryMinutes": {
             "type": "int",
