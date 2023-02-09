@@ -1,0 +1,250 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"appConfigName": {
+			"type": "string"
+		},
+		"appConfigSKU": {
+			"type": "string"
+		},
+		"keyVaultName": {
+			"type": "string"
+		},
+        "databaseServer": {
+			"type": "string"
+		},
+        "databaseName": {
+			"type": "string"
+		},
+        "databaseConnectionStringTemplate": {
+			"type": "string"
+		},
+        "blobStorageSyncContainerName": {
+			"type": "string"
+		},
+        "blobStorageSyncSubContainerName": {
+			"type": "string"
+		},
+        "blobStorageConnectionStringTemplate": {
+			"type": "string"
+		},
+        "jwtIssuer": {
+			"type": "string"
+		},
+        "jwtAudience": {
+			"type": "string"
+		},
+        "jwtExpiryMinutes": {
+            "type": "int",
+            "defaultValue": 480
+        },
+        "jwtRefreshTokenExpiryMinutes": {
+            "type": "int",
+            "defaultValue": 1440
+        }
+	},
+	"variables": {
+		"keyVaultBaseUri": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
+		"databaseUsernameKeyVaultRef": {
+			"uri": "[concat(variables('keyVaultBaseUri'), 'Database-username')]"
+		},
+        "databasePasswordKeyVaultRef": {
+			"uri": "[concat(variables('keyVaultBaseUri'), 'Database-password')]"
+		},
+        "blobStorageAccountNameKeyVaultRef": {
+			"uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountName')]"
+		},
+        "blobStorageAccountKeyKeyVaultRef": {
+			"uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountKey')]"
+		},
+        "jwtKeyKeyVaultRef": {
+			"uri": "[concat(variables('keyVaultBaseUri'), 'JWT-key')]"
+		},
+		"keyVaultType": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.AppConfiguration/configurationStores",
+			"apiVersion": "2020-07-01-preview",
+			"name": "[parameters('appConfigName')]",
+			"location": "[resourceGroup().location]",
+			"sku": {
+				"name": "[parameters('appConfigSKU')]"
+			},
+			"properties": {},
+			"resources": [
+				{
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "DatabaseOptions:Server",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('databaseServer')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "DatabaseOptions:Name",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('databaseName')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "DatabaseOptions:Username",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[string(variables('databaseUsernameKeyVaultRef'))]",
+						"contentType": "[variables('keyVaultType')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "DatabaseOptions:Password",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[string(variables('databasePasswordKeyVaultRef'))]",
+						"contentType": "[variables('keyVaultType')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "DatabaseOptions:ConnectionStringTemplate",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('databaseConnectionStringTemplate')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "BlobStorageOptions:AccountName",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[string(variables('blobStorageAccountNameKeyVaultRef'))]",
+						"contentType": "[variables('keyVaultType')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "BlobStorageOptions:AccountKey",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[string(variables('blobStorageAccountKeyKeyVaultRef'))]",
+						"contentType": "[variables('keyVaultType')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "BlobStorageOptions:SyncContainerName",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('blobStorageSyncContainerName')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "BlobStorageOptions:SyncSubContainerName",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('blobStorageSyncSubContainerName')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "BlobStorageOptions:ConnectionStringTemplate",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('blobStorageConnectionStringTemplate')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "JwtOptions:Key",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[string(variables('jwtKeyKeyVaultRef'))]",
+						"contentType": "[variables('keyVaultType')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "JwtOptions:Issuer",
+					"dependsOn": [
+						"[parameters('jwtIssuer')]"
+					],
+					"properties": {
+						"value": "[parameters('blobStorageConnectionStringTemplate')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "JwtOptions:Audience",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('jwtAudience')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "JwtOptions:ExpiryMinutes",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('jwtExpiryMinutes')]"
+					}
+				},
+                {
+					"type": "keyValues",
+					"apiVersion": "2020-07-01-preview",
+					"name": "JwtOptions:RefreshTokenExpiryMinutes",
+					"dependsOn": [
+						"[parameters('appConfigName')]"
+					],
+					"properties": {
+						"value": "[parameters('jwtRefreshTokenExpiryMinutes')]"
+					}
+				}  
+			]
+		}
+	]
+}
