@@ -205,7 +205,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2020-06-01-preview').ConnectionString]"
+            "value": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').ConnectionString]"
           }
         },
         {
