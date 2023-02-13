@@ -57,7 +57,7 @@
                 "alwaysOn": true,
                 "netFrameworkVersion": "v7.0"
             },
-            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
             "clientAffinityEnabled": false,
             "httpsOnly": true,
             "publicNetworkAccess": "Disabled"
