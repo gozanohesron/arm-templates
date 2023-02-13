@@ -29,9 +29,6 @@
     "blobStorageSyncSubContainerName": {
       "type": "string"
     },
-    "blobStorageConnectionStringTemplate": {
-      "type": "string"
-    },
     "jwtIssuer": {
       "type": "string",
       "defaultValue": ""
@@ -61,11 +58,11 @@
     "databasePasswordKeyVaultRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'Database-password')]"
     },
-    "blobStorageAccountNameKeyVaultRef": {
-      "uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountName')]"
+    "apiUsernameKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'DatalakeApi-username')]"
     },
-    "blobStorageAccountKeyKeyVaultRef": {
-      "uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountKey')]"
+    "apiPasswordKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'DatalakeApi-password')]"
     },
     "jwtKeyKeyVaultRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'JWT-key')]"
@@ -139,31 +136,7 @@
           "properties": {
             "value": "[parameters('databaseConnectionStringTemplate')]"
           }
-        },
-        {
-          "type": "keyValues",
-          "apiVersion": "2020-07-01-preview",
-          "name": "BlobStorageOptions:AccountName",
-          "dependsOn": [
-            "[parameters('appConfigName')]"
-          ],
-          "properties": {
-            "value": "[string(variables('blobStorageAccountNameKeyVaultRef'))]",
-            "contentType": "[variables('keyVaultType')]"
-          }
-        },
-        {
-          "type": "keyValues",
-          "apiVersion": "2020-07-01-preview",
-          "name": "BlobStorageOptions:AccountKey",
-          "dependsOn": [
-            "[parameters('appConfigName')]"
-          ],
-          "properties": {
-            "value": "[string(variables('blobStorageAccountKeyKeyVaultRef'))]",
-            "contentType": "[variables('keyVaultType')]"
-          }
-        },
+        },        
         {
           "type": "keyValues",
           "apiVersion": "2020-07-01-preview",
@@ -184,17 +157,6 @@
           ],
           "properties": {
             "value": "[parameters('blobStorageSyncSubContainerName')]"
-          }
-        },
-        {
-          "type": "keyValues",
-          "apiVersion": "2020-07-01-preview",
-          "name": "BlobStorageOptions:ConnectionStringTemplate",
-          "dependsOn": [
-            "[parameters('appConfigName')]"
-          ],
-          "properties": {
-            "value": "[parameters('blobStorageConnectionStringTemplate')]"
           }
         },
         {
@@ -284,6 +246,30 @@
           ],
           "properties": {
             "value": "[parameters('complisSyncProductEndpoint')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "ApiOptions:Username",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('apiUsernameKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "ApiOptions:Password",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('apiPasswordKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
           }
         }
       ]
