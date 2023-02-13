@@ -13,6 +13,12 @@
       },
       "servicePlanName": {
         "type": "string"
+      },
+      "datalakeApiName": {
+        "type": "string"
+      },
+      "appConfigName": {
+        "type": "string"
       }
     },
     "resources": [
@@ -45,6 +51,34 @@
                     {
                         "name": "AzureWebJobsStorage",
                         "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                    },
+                    {
+                      "name": "UseLocalConfiguration",
+                      "value": "false"
+                    },
+                    {
+                      "name": "ApiEndpointBaseUri",
+                      "value": "[concat('https://', parameters('datalakeApiName'), '.azurewebsites.net')]"
+                    },
+                    {
+                      "name": "AuthEndpointUri",
+                      "value": "api/v1/Auth/Login"
+                    },
+                    {
+                      "name": "StorageContainerName",
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncContainerName')]"
+                    },
+                    {
+                      "name": "StorageSubContainerName",
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncSubContainerName')]"
+                    },
+                    {
+                      "name": "StorageConnectionString",
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:ConnectionString')]"
+                    },
+                    {
+                      "name": "AppConfigConnectionString",
+                      "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('resappConfigNameourceName')), '2020-06-01').value[0].connectionString]"
                     }
                 ],
                 "cors": {

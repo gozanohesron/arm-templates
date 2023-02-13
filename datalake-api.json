@@ -13,7 +13,10 @@
         },
         "datalakeApiCors": {
             "type": "array"
-        }
+        },
+        "appConfigName": {
+            "type": "string"
+          }
     },
     "resources": [
         {
@@ -42,6 +45,10 @@
                         {
                             "name": "XDT_MicrosoftApplicationInsights_Mode",
                             "value": "default"
+                        },
+                        {
+                            "name": "ConfigOptions:AppConfigEndpoint",
+                            "value": "[concat('https://', parameters('appConfigName'), '.azconfig.io')]"
                         }
                     ],
                     "metadata": [
