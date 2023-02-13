@@ -205,7 +205,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').ConnectionString]"
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
           }
         },
         {
