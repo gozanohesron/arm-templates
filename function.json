@@ -78,7 +78,7 @@
                     },
                     {
                       "name": "AppConfigConnectionString",
-                      "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('resappConfigNameourceName')), '2020-06-01').value[0].connectionString]"
+                      "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigName')), '2020-06-01').value[0].connectionString]"
                     }
                 ],
                 "cors": {
