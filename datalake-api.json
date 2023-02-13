@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "datalakeApiName": {
+            "type": "string"
+        },
+        "servicePlanName": {
+            "type": "string"
+        },
+        "appInsightName": {
+            "type": "string"
+        },
+        "datalakeApiCors": {
+            "type": "array"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-12-01",
+            "name": "[parameters('datalakeApiName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "name": "[parameters('datalakeApiName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components', parameters('appInsightName')), '2020-02-02-preview').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('microsoft.insights/components', parameters('appInsightName')), '2020-02-02-preview').ConnectionString]"
+                        },
+                        {
+                            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "XDT_MicrosoftApplicationInsights_Mode",
+                            "value": "default"
+                        }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnet"
+                        }
+                    ],
+                    "phpVersion": "OFF",
+                    "netFrameworkVersion": "v7.0",
+                    "alwaysOn": true,
+                    "cors": {
+                        "allowedOrigins": "[parameters('datalakeApiCors')]",
+                        "supportCredentials": true
+                    }
+
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
+                "clientAffinityEnabled": true
+            }
+        }
+    ]
+}
