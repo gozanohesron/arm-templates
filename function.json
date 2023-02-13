@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "functionName": {
+        "type": "string"
+      },
+      "appInsightName": {
+        "type": "string"
+      },
+      "storageAccountName": {
+        "type": "string"
+      },
+      "servicePlanName": {
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "apiVersion": "2020-12-01",
+        "name": "[parameters('functionName')]",
+        "type": "Microsoft.Web/sites",
+        "kind": "functionapp",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "name": "[parameters('functionName')]",
+            "siteConfig": {
+                "appSettings": [
+                    {
+                        "name": "FUNCTIONS_EXTENSION_VERSION",
+                        "value": "~4"
+                    },
+                    {
+                        "name": "FUNCTIONS_WORKER_RUNTIME",
+                        "value": "dotnet-isolated"
+                    },
+                    {
+                        "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                        "value": "[reference(resourceId('microsoft.insights/components', parameters('appInsightName')), '2020-02-02-preview').InstrumentationKey]"
+                    },
+                    {
+                        "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                        "value": "[reference(resourceId('microsoft.insights/components', parameters('appInsightName')), '2020-02-02-preview').ConnectionString]"
+                    },
+                    {
+                        "name": "AzureWebJobsStorage",
+                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                    }
+                ],
+                "cors": {
+                    "allowedOrigins": [
+                        "https://portal.azure.com"
+                    ]
+                },
+                "use32BitWorkerProcess": true,
+                "ftpsState": "FtpsOnly",
+                "alwaysOn": true,
+                "netFrameworkVersion": "v7.0"
+            },
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]",
+            "clientAffinityEnabled": false,
+            "httpsOnly": true,
+            "publicNetworkAccess": "Disabled"
+        }
+      }
+    ]
+  }
