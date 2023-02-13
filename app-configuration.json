@@ -1,347 +1,292 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"appConfigName": {
-			"type": "string"
-		},
-		"appConfigSKU": {
-			"type": "string"
-		},
-		"sqlCosmosDbName": {
-			"type": "string"
-		},
-		"cosmosDbDatabase": {
-			"type": "string"
-		},
-		"storageAccountName": {
-			"type": "string"
-		},
-		"keyCloakBaseUrl": {
-			"type": "string"
-		},
-		"keyCloakRealm": {
-			"type": "string"
-		},
-		"keyCloakAudience": {
-			"type": "string",
-			"defaultValue": "smartforce-app"
-		},
-		"keyVaultName": {
-			"type": "string"
-		},
-		"ocelotApiAppName": {
-			"type": "string"
-		},
-		"sendGridSenderName": {
-			"type": "string",
-			"defaultValue": "Smartforce"
-		},
-		"sendGridSenderEmail": {
-			"type": "string",
-			"defaultValue": "test@smartforce.dk"
-		},
-		"getStreamApiKey": {
-			"type": "string"
-		},
-		"userApiAppName": {
-			"type": "string"
-		},
-		"keyCloakLoginRedirectUrl": {
-			"type": "string"
-		},
-		"keyCloakClientId": {
-			"type": "string"
-		},
-		"graphCosmosDbName": {
-			"type": "string"
-		},
-		"graphCosmosDbPort": {
-			"type": "string",
-			"defaultValue": "443"
-		}
-	},
-	"variables": {
-		"keyVaultBaseUri": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
-		"keyCloakClientSecretKeyVaultRef": {
-			"uri": "[concat(variables('keyVaultBaseUri'), 'KeyCloak-clientSecret')]"
-		},
-		"sendGridApiKeyVaultRef": {
-			"uri": "[concat(variables('keyVaultBaseUri'), 'SendGrid-apiKey')]"
-		},
-		"getStreamApiKeyVaultRef": {
-			"uri": "[concat(variables('keyVaultBaseUri'), 'GetStream-apiSecret')]"
-		},
-		"keyVaultType": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
-	},
-	"resources": [
-		{
-			"type": "Microsoft.AppConfiguration/configurationStores",
-			"apiVersion": "2020-07-01-preview",
-			"name": "[parameters('appConfigName')]",
-			"location": "[resourceGroup().location]",
-			"sku": {
-				"name": "[parameters('appConfigSKU')]"
-			},
-			"properties": {},
-			"resources": [
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDbSqlOptions:EndpointUri",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[reference(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('sqlCosmosDbName')), '2021-06-15').documentEndpoint]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDbSqlOptions:AuthKey",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[listkeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('sqlCosmosDbName')), '2020-06-01-preview').primaryMasterKey]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDbSqlOptions:Database",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('cosmosDbDatabase')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "BlobStorageOptions:StorageAccountUri",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "KeycloakOptions:BaseUrl",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('keyCloakBaseUrl')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "KeycloakOptions:Authority",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[concat(parameters('keyCloakBaseUrl'), '/auth/realms/', parameters('keyCloakRealm'))]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "KeycloakOptions:Audience",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('keyCloakAudience')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "KeycloakOptions:Realm",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('keyCloakRealm')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "KeycloakOptions:ClientSecret",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[string(variables('keyCloakClientSecretKeyVaultRef'))]",
-						"contentType": "[variables('keyVaultType')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "EndpointOptions:SmartforceBaseUri",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[concat('https://', parameters('ocelotApiAppName'), '.azurewebsites.net/api/v1')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "SendGridOptions:ApiKey",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[string(variables('sendGridApiKeyVaultRef'))]",
-						"contentType": "[variables('keyVaultType')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "SendGridOptions:SenderName",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('sendGridSenderName')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "SendGridOptions:SenderEmail",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('sendGridSenderEmail')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "UserOptions:ChatApiSecret",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[string(variables('getStreamApiKeyVaultRef'))]",
-						"contentType": "[variables('keyVaultType')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"name": "UserOptions:ChatApiKey",
-					"properties": {
-						"value": "[parameters('getStreamApiKey')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "Settings:Sentinel",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "1"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "PermissionOptions:BaseUrl",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[concat('https://', parameters('userApiAppName'), '.azurewebsites.net/api/v1')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"name": "KeycloakOptions:LoginRedirectUrl",
-					"properties": {
-						"value": "[parameters('keyCloakLoginRedirectUrl')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"name": "KeycloakOptions:ClientId",
-					"properties": {
-						"value": "[parameters('keyCloakClientId')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDBGremlinOptions:Hostname",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[concat(parameters('graphCosmosDbName'), '.gremlin.cosmosdb.azure.com')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDBGremlinOptions:Port",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('graphCosmosDbPort')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDBGremlinOptions:Database",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[parameters('cosmosDbDatabase')]"
-					}
-				},
-				{
-					"type": "keyValues",
-					"apiVersion": "2020-07-01-preview",
-					"name": "CosmosDBGremlinOptions:AuthorizationKey",
-					"dependsOn": [
-						"[parameters('appConfigName')]"
-					],
-					"properties": {
-						"value": "[listkeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('graphCosmosDbName')), '2020-06-01-preview').primaryMasterKey]"
-					}
-				}
-			]
-		}
-	]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "appConfigName": {
+      "type": "string"
+    },
+    "appConfigSKU": {
+      "type": "string"
+    },
+    "keyVaultName": {
+      "type": "string"
+    },
+    "databaseServer": {
+      "type": "string"
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "databaseConnectionStringTemplate": {
+      "type": "string"
+    },
+    "blobStorageSyncContainerName": {
+      "type": "string"
+    },
+    "blobStorageSyncSubContainerName": {
+      "type": "string"
+    },
+    "blobStorageConnectionStringTemplate": {
+      "type": "string"
+    },
+    "jwtIssuer": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "jwtAudience": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "jwtExpiryMinutes": {
+      "type": "int",
+      "defaultValue": 480
+    },
+    "jwtRefreshTokenExpiryMinutes": {
+      "type": "int",
+      "defaultValue": 1440
+    },
+    "complisSyncProductEndpoint": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "keyVaultBaseUri": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
+    "databaseUsernameKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'Database-username')]"
+    },
+    "databasePasswordKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'Database-password')]"
+    },
+    "blobStorageAccountNameKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountName')]"
+    },
+    "blobStorageAccountKeyKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'BlobStorage-accountKey')]"
+    },
+    "jwtKeyKeyVaultRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'JWT-key')]"
+    },
+    "keyVaultType": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.AppConfiguration/configurationStores",
+      "apiVersion": "2020-07-01-preview",
+      "name": "[parameters('appConfigName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[parameters('appConfigSKU')]"
+      },
+      "properties": {},
+      "resources": [
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "DatabaseOptions:Server",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('databaseServer')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "DatabaseOptions:Name",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('databaseName')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "DatabaseOptions:Username",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('databaseUsernameKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "DatabaseOptions:Password",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('databasePasswordKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "DatabaseOptions:ConnectionStringTemplate",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('databaseConnectionStringTemplate')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:AccountName",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('blobStorageAccountNameKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:AccountKey",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('blobStorageAccountKeyKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:SyncContainerName",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('blobStorageSyncContainerName')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:SyncSubContainerName",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('blobStorageSyncSubContainerName')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:ConnectionStringTemplate",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('blobStorageConnectionStringTemplate')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "BlobStorageOptions:ConnectionString",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2020-06-01-preview').ConnectionString]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "JwtOptions:Key",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('jwtKeyKeyVaultRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "JwtOptions:Issuer",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('jwtIssuer')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "JwtOptions:Audience",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('jwtAudience')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "JwtOptions:ExpiryMinutes",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('jwtExpiryMinutes')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "JwtOptions:RefreshTokenExpiryMinutes",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('jwtRefreshTokenExpiryMinutes')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "Settings:Sentinel",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "1"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "IntegrationOptions:ComplisSyncProductEndpoint",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('complisSyncProductEndpoint')]"
+          }
+        }
+      ]
+    }
+  ]
 }
