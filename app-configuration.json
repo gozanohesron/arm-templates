@@ -51,7 +51,7 @@
     },
     "sentinelValue": {
       "type": "string",
-      "defaultValue": "[parameters('sentinelValue')]"
+      "defaultValue": "[newGuid()]"
     }
   },
   "variables": {
@@ -238,7 +238,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[newGuid()]"
+            "value": "[parameters('sentinelValue')]"
           }
         },
         {
