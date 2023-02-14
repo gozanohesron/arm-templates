@@ -48,6 +48,10 @@
     "complisSyncProductEndpoint": {
       "type": "string",
       "defaultValue": ""
+    },
+    "sentinelValue": {
+      "type": "string",
+      "defaultValue": "[parameters('sentinelValue')]"
     }
   },
   "variables": {
