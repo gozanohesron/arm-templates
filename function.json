@@ -19,6 +19,9 @@
       },
       "appConfigName": {
         "type": "string"
+      },
+      "functionBlobNamePrefix": {
+        "type": "string"
       }
     },
     "resources": [
@@ -79,6 +82,10 @@
                     {
                       "name": "AppConfigConnectionString",
                       "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigName')), '2020-06-01').value[0].connectionString]"
+                    },
+                    {
+                      "name": "BlobFileNamePrefix",
+                      "value": "[parameters('functionBlobNamePrefix')]"
                     }
                 ],
                 "cors": {
