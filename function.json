@@ -8,13 +8,13 @@
       "appInsightName": {
         "type": "string"
       },
-      "storageAccountName": {
+      "storageAccount": {
         "type": "string"
       },
       "servicePlanName": {
         "type": "string"
       },
-      "datalakeApiName": {
+      "datalakeApiEndpoint": {
         "type": "string"
       },
       "appConfigName": {
@@ -22,6 +22,12 @@
       },
       "functionBlobNamePrefix": {
         "type": "string"
+      },
+      "blobStorageSyncContainerName": {
+        "type": "string" 
+      },
+      "blobStorageSyncSubContainerName": {
+        "type": "string" 
       }
     },
     "resources": [
@@ -53,7 +59,7 @@
                     },
                     {
                         "name": "AzureWebJobsStorage",
-                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        "value": "[parameters('storageAccount')]"
                     },
                     {
                       "name": "UseLocalConfiguration",
@@ -61,7 +67,7 @@
                     },
                     {
                       "name": "ApiEndpointBaseUri",
-                      "value": "[concat('https://', parameters('datalakeApiName'), '.azurewebsites.net')]"
+                      "value": "[parameters('datalakeApiEndpoint')]"
                     },
                     {
                       "name": "AuthEndpointUri",
@@ -69,15 +75,15 @@
                     },
                     {
                       "name": "StorageContainerName",
-                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncContainerName')]"
+                      "value": "[parameters('blobStorageSyncContainerName')]"
                     },
                     {
                       "name": "StorageSubContainerName",
-                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncSubContainerName')]"
+                      "value": "[parameters('blobStorageSyncSubContainerName')]"
                     },
                     {
                       "name": "StorageConnectionString",
-                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:ConnectionString')]"
+                      "value": "[parameters('storageAccount')]"
                     },
                     {
                       "name": "AppConfigConnectionString",
@@ -101,7 +107,7 @@
             "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
             "clientAffinityEnabled": false,
             "httpsOnly": true,
-            "publicNetworkAccess": "Disabled"
+            "publicNetworkAccess": "Enabled"
         }
       }
     ]

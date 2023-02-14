@@ -14,7 +14,7 @@
         "datalakeApiCors": {
             "type": "array"
         },
-        "appConfigName": {
+        "appConfigEndpoint": {
             "type": "string"
           }
     },
@@ -48,7 +48,7 @@
                         },
                         {
                             "name": "ConfigOptions:AppConfigEndpoint",
-                            "value": "[concat('https://', parameters('appConfigName'), '.azconfig.io')]"
+                            "value": "[parameters('appConfigEndpoint')]"
                         }
                     ],
                     "metadata": [
