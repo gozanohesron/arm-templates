@@ -20,7 +20,10 @@
       "appConfigName": {
         "type": "string"
       },
-      "functionBlobNamePrefix": {
+      "functionArchProductBatchJsonSize": {
+        "type": "int"
+      },
+      "functionBatchFilesContainerName": {
         "type": "string"
       },
       "blobStorageSyncContainerName": {
@@ -90,8 +93,12 @@
                       "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigName')), '2020-06-01').value[0].connectionString]"
                     },
                     {
-                      "name": "BlobFileNamePrefix",
-                      "value": "[parameters('functionBlobNamePrefix')]"
+                      "name": "ArchProductJsonBatchSize",
+                      "value": "[parameters('functionArchProductBatchJsonSize')]"
+                    },
+                    {
+                      "name": "BatchFilesContainerName",
+                      "value": "[parameters('functionBatchFilesContainerName')]"                      
                     }
                 ],
                 "cors": {
