@@ -317,7 +317,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[parameters('sendGridSenderName)]"
+            "value": "[parameters('sendGridSenderName')]"
           }
         },
         {
