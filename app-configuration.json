@@ -92,7 +92,7 @@
     "hubSpotKeyKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'HubSpot-key')]"
     },
-    "keyVaultType": "application/vnd.microsoft.appconfig.KVRef+json;charset=utf-8"
+    "keyVaultType": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
   },
   "resources": [
     {
