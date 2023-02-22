@@ -8,9 +8,6 @@
       "appInsightName": {
         "type": "string"
       },
-      "storageAccount": {
-        "type": "string"
-      },
       "servicePlanName": {
         "type": "string"
       },
@@ -62,7 +59,7 @@
                     },
                     {
                         "name": "AzureWebJobsStorage",
-                        "value": "[parameters('storageAccount')]"
+                        "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:ConnectionString')]"
                     },
                     {
                       "name": "UseLocalConfiguration",
@@ -70,19 +67,19 @@
                     },
                     {
                       "name": "StorageContainerName",
-                      "value": "[parameters('blobStorageSyncContainerName')]"
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncContainerName')]"
                     },
                     {
                       "name": "StorageSubContainerName",
-                      "value": "[parameters('blobStorageSyncSubContainerName')]"
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:SyncSubContainerName')]"
                     },
                     {
                       "name": "StorageConnectionString",
-                      "value": "[parameters('storageAccount')]"
+                      "value": "[concat('@Microsoft.AppConfiguration(Endpoint=https://', parameters('appConfigName'), '.azconfig.io; Key=BlobStorageOptions:ConnectionString')]"
                     },
                     {
-                      "name": "AppConfigConnectionString",
-                      "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', parameters('appConfigName')), '2020-06-01').value[0].connectionString]"
+                      "name": "AppConfigEndpoint",
+                      "value": "[concat('https://', parameters('appConfigName'), '.azconfig.io')]"
                     },
                     {
                       "name": "ArchProductJsonBatchSize",
