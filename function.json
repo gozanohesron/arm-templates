@@ -14,23 +14,23 @@
       "servicePlanName": {
         "type": "string"
       },
-      "datalakeApiEndpoint": {
-        "type": "string"
-      },
       "appConfigName": {
         "type": "string"
       },
       "functionArchProductBatchJsonSize": {
         "type": "int"
       },
-      "functionBatchFilesContainerName": {
-        "type": "string"
-      },
       "blobStorageSyncContainerName": {
         "type": "string" 
       },
       "blobStorageSyncSubContainerName": {
         "type": "string" 
+      },
+      "functionErrorEmailTemplateId": {
+        "type": "string"
+      },
+      "functionErrorEmailRecepients": {
+        "type": "string"
       }
     },
     "resources": [
@@ -69,14 +69,6 @@
                       "value": "false"
                     },
                     {
-                      "name": "ApiEndpointBaseUri",
-                      "value": "[parameters('datalakeApiEndpoint')]"
-                    },
-                    {
-                      "name": "AuthEndpointUri",
-                      "value": "api/v1/Auth/Login"
-                    },
-                    {
                       "name": "StorageContainerName",
                       "value": "[parameters('blobStorageSyncContainerName')]"
                     },
@@ -97,8 +89,12 @@
                       "value": "[parameters('functionArchProductBatchJsonSize')]"
                     },
                     {
-                      "name": "BatchFilesContainerName",
-                      "value": "[parameters('functionBatchFilesContainerName')]"                      
+                      "name": "ErrorEmailTemplateId",
+                      "value": "[parameters('functionErrorEmailTemplateId')]"
+                    },
+                    {
+                      "name": "ErrorEmailRecepients",
+                      "value": "[parameters('functionErrorEmailRecepients')]"
                     }
                 ],
                 "cors": {

@@ -52,26 +52,47 @@
     "sentinelValue": {
       "type": "string",
       "defaultValue": "[newGuid()]"
+    },
+    "sendGridSenderName": {
+      "type": "string"
+    },
+    "sendGridSenderEmail": {
+      "type": "string"
+    },
+    "hubSpotBaseUrl": {
+      "type": "string"
+    },
+    "hubSpotContactEndpoint": {
+      "type": "string"
+    },
+    "hubSpotPropertiesEndpoint": {
+      "type": "string"
     }
   },
   "variables": {
     "keyVaultBaseUri": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/secrets/')]",
-    "databaseUsernameKeyVaultRef": {
+    "databaseUsernameKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'Database-username')]"
     },
-    "databasePasswordKeyVaultRef": {
+    "databasePasswordKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'Database-password')]"
     },
-    "apiUsernameKeyVaultRef": {
+    "apiUsernameKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'DatalakeApi-username')]"
     },
-    "apiPasswordKeyVaultRef": {
+    "apiPasswordKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'DatalakeApi-password')]"
     },
-    "jwtKeyKeyVaultRef": {
+    "jwtKeyKVRef": {
       "uri": "[concat(variables('keyVaultBaseUri'), 'JWT-key')]"
     },
-    "keyVaultType": "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8"
+    "sendGridKeyKVRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'SendGrid-key')]"
+    },
+    "hubSpotKeyKVRef": {
+      "uri": "[concat(variables('keyVaultBaseUri'), 'HubSpot-key')]"
+    },
+    "keyVaultType": "application/vnd.microsoft.appconfig.KVRef+json;charset=utf-8"
   },
   "resources": [
     {
@@ -114,7 +135,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[string(variables('databaseUsernameKeyVaultRef'))]",
+            "value": "[string(variables('databaseUsernameKVRef'))]",
             "contentType": "[variables('keyVaultType')]"
           }
         },
@@ -126,7 +147,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[string(variables('databasePasswordKeyVaultRef'))]",
+            "value": "[string(variables('databasePasswordKVRef'))]",
             "contentType": "[variables('keyVaultType')]"
           }
         },
@@ -182,7 +203,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[string(variables('jwtKeyKeyVaultRef'))]",
+            "value": "[string(variables('jwtKeyKVRef'))]",
             "contentType": "[variables('keyVaultType')]"
           }
         },
@@ -244,7 +265,7 @@
         {
           "type": "keyValues",
           "apiVersion": "2020-07-01-preview",
-          "name": "IntegrationOptions:ComplisSyncProductEndpoint",
+          "name": "IntegrationOptions:Complis:SyncProductEndpoint",
           "dependsOn": [
             "[parameters('appConfigName')]"
           ],
@@ -260,7 +281,7 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[string(variables('apiUsernameKeyVaultRef'))]",
+            "value": "[string(variables('apiUsernameKVRef'))]",
             "contentType": "[variables('keyVaultType')]"
           }
         },
@@ -272,8 +293,87 @@
             "[parameters('appConfigName')]"
           ],
           "properties": {
-            "value": "[string(variables('apiPasswordKeyVaultRef'))]",
+            "value": "[string(variables('apiPasswordKVRef'))]",
             "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "SendGridOptions:ApiKey",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('sendGridKeyKVRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "SendGridOptions:SenderName",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('sendGridSenderName)]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "SendGridOptions:SenderEmail",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('sendGridSenderEmail')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "IntegrationOptions:HubSpot:Key",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[string(variables('hubSpotKeyKVRef'))]",
+            "contentType": "[variables('keyVaultType')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "IntegrationOptions:HubSpot:BaseUrl",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('hubSpotBaseUrl')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "IntegrationOptions:HubSpot:ContactsEndpoint",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('hubSpotContactEndpoint')]"
+          }
+        },
+        {
+          "type": "keyValues",
+          "apiVersion": "2020-07-01-preview",
+          "name": "IntegrationOptions:HubSpot:PropertiesEndpoint",
+          "dependsOn": [
+            "[parameters('appConfigName')]"
+          ],
+          "properties": {
+            "value": "[parameters('hubSpotPropertiesEndpoint')]"
           }
         }
       ]
